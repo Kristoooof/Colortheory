@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Színelmélet kezdőknek</title>
+  <!-- Google Fonts: címek, szöveg, színkódok -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;600;700&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="belso">
+      <p class="felirat">Színek az informatikában</p>
+      <h1>Színelmélet kezdőknek</h1>
+      <p class="bevezeto">Hogyan keveri ki a képernyő a színeket, miért látszik ugyanaz a szín másnak, és hogyan találsz hozzá jól illő párokat? Próbáld ki mindet.</p>
+    </div>
+  </header>
+  <!-- dísz: színkör-csík a fejléc alatt -->
+  <div class="spektrum" aria-hidden="true"></div>
+
+  <main>
+
+    <!-- A) Szín az informatikában: szöveg + RGB-keverő -->
+    <section class="kartya" id="informatika">
+      <h2>Hogyan lesz a pixelekből szín?</h2>
+      <div class="ketoszlop">
+
+        <div class="szoveg">
+          <p>A képernyő apró fénypontokból, <strong>pixelekből</strong> áll. Minden pixelben három kis lámpa van: egy vörös, egy zöld és egy kék. Mindegyik 0 és 255 közötti fényerővel világít, a szemünk pedig összekeveri őket. Ezt hívják <strong>RGB</strong>-nek (Red, Green, Blue).</p>
+          <p>Mivel 256 × 256 × 256 lehetőség van, összesen <strong>16 777 216</strong> színt lehet így leírni. A fény összeadódik: ha mind a három lámpa teljesen világít, fehéret kapsz, ha egyik sem, feketét. Festéknél ez fordítva van, ott minél többet keversz, annál sötétebb lesz.</p>
+          <dl>
+            <dt>HEX</dt>
+            <dd>Ugyanaz az RGB, hexadecimálisan. A <code>#3b82f6</code> jelentése: 3b = 59 vörös, 82 = 130 zöld, f6 = 246 kék. CSS-ben ezt írod a leggyakrabban.</dd>
+            <dt>RGB</dt>
+            <dd>Három szám 0 és 255 között, például <code>rgb(59, 130, 246)</code>.</dd>
+            <dt>HSL</dt>
+            <dd>Árnyalat (0–360°-os helye a színkörön), telítettség és világosság. Ezzel a legkönnyebb harmóniákat számolni, ezért ez az oldal is ezt használja.</dd>
+          </dl>
+        </div>
+
+        <!-- RGB-keverő: a script.js 2. része tölti és frissíti -->
+        <div class="kevero">
+          <h3>Keverd ki magad!</h3>
+          <div class="kevero-minta" id="keveroMinta"></div>
+          <p class="kevero-kod" id="keveroKod"></p>
+
+          <label class="csuszka-sor r">
+            <span>R</span>
+            <input type="range" id="rCsuszka" min="0" max="255" value="59">
+            <output id="rErtek">59</output>
+          </label>
+          <label class="csuszka-sor g">
+            <span>G</span>
+            <input type="range" id="gCsuszka" min="0" max="255" value="130">
+            <output id="gErtek">130</output>
+          </label>
+          <label class="csuszka-sor b">
+            <span>B</span>
+            <input type="range" id="bCsuszka" min="0" max="255" value="246">
+            <output id="bErtek">246</output>
+          </label>
+
+          <!-- gyors példa gombok (JS tölti) -->
+          <div class="gombsor" id="keveroGombok"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- B) Ugyanaz a szín másnak látszik -->
+    <section class="kartya" id="latszat">
+      <h2>Ugyanaz a szín, mégis másnak látszik</h2>
+      <p class="leiras">A szín nem csak a kódjától függ, hanem attól is, mi van körülötte. Az agyunk mindig a környezethez hasonlítja, ezt hívják <strong>egyidejű kontrasztnak</strong>. Minden példában a két négyzet pontosan ugyanolyan színű, csak a hátterük más. Nézd meg őket, aztán nyomd meg a gombot: az összekötő csík ugyanolyan színű, mint a négyzetek, így azonnal látszik, hogy egyformák.</p>
+
+      <!-- a bemutatókat a JS rakja ide (demok lista) -->
+      <div class="demok" id="demok"></div>
+
+      <!-- szürke négyzet, a háttér színe csúszkákkal állítható -->
+      <div class="jatek">
+        <h3>Játssz a háttérrel</h3>
+        <p>A négyzet végig ugyanaz a szürke (<code>#808080</code>). Mozgasd a csúszkákat, és nézd, hogyan változik a látszata.</p>
+        <div class="jatek-panel" id="jatekPanel"><span class="negyzet nagy" style="background:#808080"></span></div>
+        <label class="csuszka-sor">
+          <span>Háttér árnyalata</span>
+          <input type="range" id="arnyalatCsuszka" min="0" max="360" value="0">
+          <output id="arnyalatErtek">0°</output>
+        </label>
+        <label class="csuszka-sor">
+          <span>Háttér világossága</span>
+          <input type="range" id="vilagossagCsuszka" min="0" max="100" value="45">
+          <output id="vilagossagErtek">45%</output>
+        </label>
+      </div>
+    </section>
+
+    <!-- C) Alapszín választó -->
+    <section class="kartya" id="valaszto-kartya">
+      <h2>Válassz egy alapszínt</h2>
+      <p class="leiras">Innentől minden szín ebből számolódik. A színkörön az irány az árnyalat (0° vörös, 120° zöld, 240° kék), a közepe felé világosabb, a széle felé sötétebb a szín. Fogd meg a kör egyik pontját és húzd: a színek vele együtt mozognak.</p>
+      <div class="valaszto-sor">
+        <div class="valaszto-bal">
+          <input type="color" id="szinvalaszto" value="#3b82f6" aria-label="Alapszín">
+          <button type="button" class="gomb" id="veletlenGomb">Véletlen szín</button>
+        </div>
+        <!-- HEX / RGB / HSL kiírás (JS) -->
+        <div id="szinadatok"></div>
+        <!-- színkör az alapszínnel (JS rajzolja) -->
+        <div class="kor" id="kor-alap"></div>
+      </div>
+      <!-- csak akkor látszik, ha az alapszín majdnem szürke -->
+      <p class="jegyzet" id="szurkeJegyzet" hidden>Ez a szín majdnem szürke, ezért a harmóniái is szürkék maradnak. Válassz telítettebb színt.</p>
+    </section>
+
+    <!-- D) Harmóniák: a kártyákat a JS hozza létre (harmoniak lista) -->
+    <div class="harmoniak" id="harmoniak"></div>
+
+    <!-- E) Kontraszt az alapszínen -->
+    <section class="kartya" id="kontraszt">
+      <h2>Kontraszt az alapszínen</h2>
+      <p class="leiras">Mennyire olvasható a fehér és a fekete szöveg az alapszínen? A kontrasztarány 1 és 21 között van. <strong>4,5 felett</strong> jó az olvashatóság.</p>
+      <div class="kontraszt-sor">
+        <div class="kontraszt-doboz" id="feherSzoveg">
+          <strong>Fehér szöveg</strong>
+          <p>Árvíztűrő tükörfúrógép</p>
+          <span id="feherAdat"></span>
+        </div>
+        <div class="kontraszt-doboz" id="feketeSzoveg">
+          <strong>Fekete szöveg</strong>
+          <p>Árvíztűrő tükörfúrógép</p>
+          <span id="feketeAdat"></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- F) Az oldal színei: 3 lista (az option-öket a JS tölti) + üzenetek -->
+    <section class="kartya" id="beallito">
+      <h2>Állítsd be az oldal színeit!</h2>
+      <p class="leiras">Válassz színt a három listából, és az egész oldal azonnal átszíneződik. Alatta megmondom, jó-e a választásod.</p>
+
+      <div class="listak">
+        <label>
+          Fő szín (háttér)
+          <span class="valaszto-egyseg">
+            <span class="minta-negyzet" id="mintaFo"></span>
+            <select id="foSzin"></select>
+          </span>
+        </label>
+
+        <label>
+          Másodlagos szín (fejléc, lábléc, keretek)
+          <span class="valaszto-egyseg">
+            <span class="minta-negyzet" id="mintaMasodlagos"></span>
+            <select id="masodlagosSzin"></select>
+          </span>
+        </label>
+
+        <label>
+          Betűszín
+          <span class="valaszto-egyseg">
+            <span class="minta-negyzet" id="mintaBetu"></span>
+            <select id="betuSzin"></select>
+          </span>
+        </label>
+      </div>
+
+      <h3>Üzenetek</h3>
+      <ul id="uzenetek" aria-live="polite"></ul>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="belso">
+      <p>Kezdő szintű HTML + CSS + JavaScript projekt.</p>
+    </div>
+  </footer>
+
+  <!-- a script az oldal végén van, hogy az elemek már léteznek, mire elindul -->
+  <script src="script.js"></script>
+</body>
+</html>
