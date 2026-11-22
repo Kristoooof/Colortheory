@@ -777,7 +777,109 @@ masodlagosLista.addEventListener("change", temaAlkalmaz);
 betuLista.addEventListener("change", temaAlkalmaz);
 
 // =====================================================
-// 7. INDÍTÁS – az oldal betöltésekor egyszer lefuttatjuk
+// 7. SZÍNTALÁLÓ JÁTÉK
+// =====================================================
+
+// HEX -> CIE Lab. Ebben a színtérben a számokbeli távolság közel áll ahhoz,
+// amit a szemünk különbségnek lát (az RGB-nél pontosabb).
+function hexToLab(hex) {
+  const rgb = hexToRgb(hex);
+  const csatornak = [rgb.r, rgb.g, rgb.b];
+  const lin = [];
+
+  // sRGB -> lineáris
+  for (let i = 0; i < csatornak.length; i++) {
+    const c = csatornak[i] / 255;
+    if (c <= 0.04045) {
+      lin.push(c / 12.92);
+    } else {
+      lin.push(Math.pow((c + 0.055) / 1.055, 2.4));
+    }
+  }
+
+  // lineáris RGB -> XYZ (D65 fehérpont)
+  const x = (0.4124564 * lin[0] + 0.3575761 * lin[1] + 0.1804375 * lin[2]) / 0.95047;
+  const y = 0.2126729 * lin[0] + 0.7151522 * lin[1] + 0.0721750 * lin[2];
+  const z = (0.0193339 * lin[0] + 0.1191920 * lin[1] + 0.9503041 * lin[2]) / 1.08883;
+
+  function f(t) {
+    if (t > 0.008856) {
+      return Math.cbrt(t);
+    }
+    return 7.787 * t + 16 / 116;
+  }
+
+  // L = világosság (0-100), a és b = a színes tengelyek (zöld-piros, kék-sárga)
+  return { L: 116 * f(y) - 16, a: 500 * (f(x) - f(y)), b: 200 * (f(y) - f(z)) };
+}
+
+// Két Lab szín távolsága (ΔE). 1 alatt nem látszik különbség, 10 felett már egyértelmű.
+function labTavolsag(p, q) {
+  return Math.sqrt(Math.pow(p.L - q.L, 2) + Math.pow(p.a - q.a, 2) + Math.pow(p.b - q.b, 2));
+}
+
+const celSzinDoboz = document.getElementById("celSzin");
+const tippValaszto = document.getElementById("tippValaszto");
+const kuldesGomb = document.getElementById("kuldesGomb");
+
+let celHex = "#808080"; // a keresett szín, küldésig nem írjuk ki
+
+// Új véletlen szín. A telítettség és világosság korlátozva van, hogy ne legyen szinte fekete/fehér/szürke.
+function ujSzin() {
+  celHex = hslToHex(Math.floor(Math.random() * 360), 30 + Math.random() * 65, 20 + Math.random() * 60);
+  celSzinDoboz.style.backgroundColor = celHex;
+  tippValaszto.value = "#808080"; // a tipp visszaáll szürkére
+  kuldesGomb.disabled = false;
+  document.getElementById("eredmeny").hidden = true;
+}
+
+// Küldés: pontszám a tipp és a keresett szín távolságából.
+// 100 * e^(-ΔE/15): ΔE = 0 -> 100 pont, ΔE = 10 -> kb. 51, ΔE = 30 -> kb. 14
+function tippKuldes() {
+  const tippHex = tippValaszto.value;
+  const cel = hexToLab(celHex);
+  const tipp = hexToLab(tippHex);
+  const tavolsag = labTavolsag(cel, tipp);
+  const pont = Math.round(100 * Math.exp(-tavolsag / 15));
+
+  let szoveg;
+  if (pont >= 95) {
+    szoveg = "Tökéletes, szinte pontosan eltaláltad!";
+  } else if (pont >= 85) {
+    szoveg = "Nagyon közel vagy.";
+  } else if (pont >= 70) {
+    szoveg = "Jó tipp, kicsit eltér.";
+  } else if (pont >= 50) {
+    szoveg = "Közepes: a színcsalád stimmel, de érezhető a különbség.";
+  } else if (pont >= 30) {
+    szoveg = "Gyenge, még elég messze van.";
+  } else {
+    szoveg = "Nagyon messze van.";
+  }
+
+  // világosság-tipp, ha számottevő a különbség
+  if (tipp.L - cel.L > 4) {
+    szoveg += " A tipped világosabb a keresettnél.";
+  } else if (cel.L - tipp.L > 4) {
+    szoveg += " A tipped sötétebb a keresettnél.";
+  }
+
+  document.getElementById("pontSzam").textContent = pont;
+  document.getElementById("pontSav").style.width = pont + "%";
+  document.getElementById("pontSzoveg").textContent = szoveg;
+  document.getElementById("pontReszlet").textContent =
+    "Keresett: " + celHex + " | A tipped: " + tippHex + " | eltérés (ΔE): " + tavolsag.toFixed(1);
+  document.getElementById("eredmeny").hidden = false;
+
+  // újabb küldés csak új színnel, különben addig lehetne próbálkozni, amíg el nem találja
+  kuldesGomb.disabled = true;
+}
+
+document.getElementById("ujSzinGomb").addEventListener("click", ujSzin);
+kuldesGomb.addEventListener("click", tippKuldes);
+
+// =====================================================
+// 8. INDÍTÁS – az oldal betöltésekor egyszer lefuttatjuk
 // =====================================================
 harmoniaKartyakLetrehoz();
 korMozgathato("kor-alap");
@@ -785,3 +887,4 @@ keveroFrissit();
 alapszinBeolvas();
 szinharmoniakFrissit();
 temaAlkalmaz();
+ujSzin();
