@@ -171,6 +171,33 @@
       <ul id="uzenetek" aria-live="polite"></ul>
     </section>
 
+        <!-- G) Színtaláló játék -->
+    <section class="kartya" id="talalo">
+      <h2>Színtaláló játék</h2>
+      <p class="leiras">Bal oldalon megjelenik egy szín. Kattints a jobb oldali téglalapra, és a színválasztóval állítsd be a hozzá legjobban hasonlító színt. Ha kész vagy, nyomd meg a „Küldés" gombot, és megkapod a pontszámod. Az „Új szín" gombbal újra kezdheted.</p>
+
+      <button type="button" class="gomb" id="ujSzinGomb">Új szín</button>
+
+      <div class="talalo-feliratok">
+        <span>Ezt a színt keresd</span>
+        <span>A te színed (kattints a téglalapra)</span>
+      </div>
+      <!-- bal: a keresett szín, jobb: a színválasztó -->
+      <div class="talalo-par">
+        <div class="talalo-szin" id="celSzin"></div>
+        <input type="color" id="tippValaszto" class="talalo-szin" value="#808080" aria-label="A te színed">
+      </div>
+
+      <button type="button" class="gomb" id="kuldesGomb">Küldés</button>
+
+      <!-- eredmény, küldés után látszik -->
+      <div class="eredmeny" id="eredmeny" hidden>
+        <p class="pont"><span id="pontSzam">0</span> / 100</p>
+        <div class="pontsav"><span id="pontSav"></span></div>
+        <p id="pontSzoveg"></p>
+        <p class="kod" id="pontReszlet"></p>
+      </div>
+    </section>
   </main>
 
   <footer>
